@@ -1,0 +1,199 @@
+basePath: /
+definitions:
+  models.Address:
+    properties:
+      city:
+        type: string
+      country:
+        type: string
+      lat:
+        type: string
+      lng:
+        type: string
+      street:
+        type: string
+    type: object
+  models.GeocodeRequest:
+    properties:
+      lat:
+        type: string
+      lng:
+        type: string
+    type: object
+  models.GeocodeResponse:
+    properties:
+      addresses:
+        items:
+          $ref: '#/definitions/models.Address'
+        type: array
+    type: object
+  models.LoginRequest:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  models.RegisterRequest:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  models.SearchRequest:
+    properties:
+      query:
+        type: string
+    type: object
+  models.SearchResponse:
+    properties:
+      addresses:
+        items:
+          $ref: '#/definitions/models.Address'
+        type: array
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API для работы с адресами и геокодингом
+  title: Geo Service API
+  version: "1.0"
+paths:
+  /api/address/geocode:
+    post:
+      consumes:
+      - application/json
+      description: Принимает текстовый запрос с координатами ("lat" - широта, "lng"
+        - долгота) и возвращает список адресов
+      parameters:
+      - description: Запрос
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.GeocodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GeocodeResponse'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Поиск адреса
+      tags:
+      - address
+  /api/address/search:
+    post:
+      consumes:
+      - application/json
+      description: Принимает текстовый запрос и возвращает список адресов
+      parameters:
+      - description: Запрос
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.SearchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SearchResponse'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Поиск адреса
+      tags:
+      - address
+  /api/login:
+    post:
+      consumes:
+      - application/json
+      description: Проверяет логин и пароль, возвращает JWT-токен
+      parameters:
+      - description: Данные пользователя
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Токен
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Авторизация пользователя
+      tags:
+      - auth
+  /api/register:
+    post:
+      consumes:
+      - application/json
+      description: Регистрирует нового пользователя
+      parameters:
+      - description: Данные пользователя
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User registered successfully
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+      summary: Регистрация пользователя
+      tags:
+      - auth
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

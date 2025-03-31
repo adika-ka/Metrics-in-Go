@@ -1,0 +1,13 @@
+services:
+  geo_service:
+    build: .
+    environment:
+      - DADATA_API_KEY=9c667615626123e3c70123efa6ca12e53ae94e06
+    network_mode: "host"
+    restart: always
+  redis:
+    image: redis:7-alpine
+    container_name: geo_redis
+    ports:
+      - "6379:6379"
+    restart: always
